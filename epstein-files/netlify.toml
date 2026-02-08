@@ -1,0 +1,120 @@
+[build]
+  publish = "site"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_FLAGS = "--no-audit --no-fund"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[dev]
+  command = "npm run dev"
+  targetPort = 3999
+  port = 8888
+  publish = "site"
+
+# ---------- Serverless API ----------
+[[redirects]]
+  from = "/api/checkout"
+  to = "/.netlify/functions/checkout"
+  status = 200
+
+[[redirects]]
+  from = "/api/stripe-webhook"
+  to = "/.netlify/functions/stripe-webhook"
+  status = 200
+
+[[redirects]]
+  from = "/api/verify"
+  to = "/.netlify/functions/verify"
+  status = 200
+
+[[redirects]]
+  from = "/api/documents"
+  to = "/.netlify/functions/documents"
+  status = 200
+
+[[redirects]]
+  from = "/api/search"
+  to = "/.netlify/functions/search"
+  status = 200
+
+[[redirects]]
+  from = "/api/names"
+  to = "/.netlify/functions/names"
+  status = 200
+
+[[redirects]]
+  from = "/api/trending"
+  to = "/.netlify/functions/trending"
+  status = 200
+
+[[redirects]]
+  from = "/api/most-read"
+  to = "/.netlify/functions/most-read"
+  status = 200
+
+[[redirects]]
+  from = "/api/topics"
+  to = "/.netlify/functions/topics"
+  status = 200
+
+[[redirects]]
+  from = "/api/source-stats"
+  to = "/.netlify/functions/source-stats"
+  status = 200
+
+[[redirects]]
+  from = "/api/years"
+  to = "/.netlify/functions/years"
+  status = 200
+
+[[redirects]]
+  from = "/api/image"
+  to = "/.netlify/functions/image"
+  status = 200
+
+[[redirects]]
+  from = "/api/alerts"
+  to = "/.netlify/functions/alerts"
+  status = 200
+
+# ---------- SSR pages ----------
+[[redirects]]
+  from = "/file/*"
+  to = "/.netlify/functions/file"
+  status = 200
+
+[[redirects]]
+  from = "/a/*"
+  to = "/.netlify/functions/article-ssr"
+  status = 200
+
+[[redirects]]
+  from = "/topic/*"
+  to = "/.netlify/functions/topic"
+  status = 200
+
+[[redirects]]
+  from = "/source/*"
+  to = "/.netlify/functions/source"
+  status = 200
+
+[[redirects]]
+  from = "/timeline/*"
+  to = "/.netlify/functions/timeline"
+  status = 200
+
+# ---------- SEO ----------
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/.netlify/functions/sitemap"
+  status = 200
+
+[[redirects]]
+  from = "/sitemap-:page.xml"
+  to = "/.netlify/functions/sitemap"
+  status = 200

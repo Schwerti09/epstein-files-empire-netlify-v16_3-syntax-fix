@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin – Epstein Files</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="topbar">
+  <div class="container">
+    <div class="row">
+      <div class="badge"><span class="dot"></span><strong>Live</strong> · <span id="today"></span></div>
+      <div class="badge">Status: <span id="authState">Gast</span> · <a href="#" id="logoutBtn" style="display:none">Logout</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="masthead">
+  <div class="container">
+    <div class="inner">
+      <div class="logo">
+        EPSTEIN FILES
+        <small>Index + Leseführung für öffentlich zugängliche Quellen · Premium: Highlights, Smart‑Match, Namen‑Index</small>
+      </div>
+      <div class="actions">
+        <a class="btn" href="/admin.html">Admin</a>
+        <a class="btn primary" href="#" data-subscribe>Freischalten <small>ab €1,99</small></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="container">
+    <div class="row">
+      <a href="/">Start</a>
+      <a href="/search.html">Suche</a>
+      <a href="/names.html">Namen‑Index</a>
+      <a href="/about.html">Methode</a>
+      <a href="/partners.html">Partner</a>
+    </div>
+  </div>
+</div>
+
+<main class="container">
+  <div class="grid" style="grid-template-columns:1fr .9fr;margin-top:16px">
+    <div>
+      <div class="card pad">
+        <div class="kicker">Admin</div>
+        <div class="h2">Control Room</div>
+        <div class="p muted">Setze <strong>ADMIN_TOKEN</strong> in Netlify Env, dann hier eingeben (nur lokal im Browser gespeichert).</div>
+        <div class="searchbar">
+          <input id="adminToken" type="password" placeholder="ADMIN_TOKEN eingeben">
+          <button id="saveToken">Speichern</button>
+        </div>
+        <div class="p small muted" id="adminState"></div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <div class="pad" style="border-bottom:1px solid var(--line)">
+          <div class="kicker">1) Sources</div>
+          <div class="h2">RSS‑Quellen hinzufügen</div>
+          <div class="p small muted">Nur RSS. Kein wildes Scraping.</div>
+        </div>
+        <div class="pad">
+          <div class="split">
+            <input id="srcName" placeholder="Name (z.B. CourtListener, DOJ, NYT)" style="padding:12px;border:1px solid var(--line);border-radius:12px">
+            <input id="srcCat" placeholder="Kategorie (z.B. court, news, archive)" style="padding:12px;border:1px solid var(--line);border-radius:12px">
+          </div>
+          <div style="height:10px"></div>
+          <input id="srcUrl" placeholder="Feed URL (RSS)" style="width:100%;padding:12px;border:1px solid var(--line);border-radius:12px">
+          <div style="height:10px"></div>
+          <a class="btn primary" href="#" id="addSource">Quelle hinzufügen</a>
+          <div class="p small muted" id="srcMsg"></div>
+        </div>
+        <div id="srcList" class="list"></div>
+      </div>
+
+      <div class="card pad" style="margin-top:18px">
+        <div class="kicker">2) Ingest</div>
+        <div class="h2">Jetzt ingestieren</div>
+        <div class="p small muted">Zieht neue Items aus RSS in Neon.</div>
+        <a class="btn primary" href="#" id="runIngest">Ingest starten</a>
+        <div class="p small muted" id="ingestMsg"></div>
+      </div>
+
+      <div class="card pad" style="margin-top:18px">
+        <div class="kicker">3) Enrich (AI)</div>
+        <div class="h2">AI‑Enrich für neueste Dokumente</div>
+        <div class="p small muted">Benötigt OPENAI_API_KEY. Erstellt Summary + Premium‑Highlights + Tags + Entitäten.</div>
+        <a class="btn danger" href="#" id="enrichLatest">Neueste 5 enrich</a>
+        <div class="p small muted" id="enrichMsg"></div>
+      </div>
+    </div>
+
+    <aside>
+      <div class="card pad">
+        <div class="kicker">Checkliste</div>
+        <ol class="p small">
+          <li>Neon: <code>database/schema.sql</code> ausführen</li>
+          <li>Netlify Env: DATABASE_URL, STRIPE_SECRET_KEY, ADMIN_TOKEN</li>
+          <li>Optional: OPENAI_API_KEY, OPENAI_MODEL</li>
+          <li>Optional: CRON_SECRET + Scheduled Functions aktivieren</li>
+        </ol>
+        <hr>
+        <div class="notice">
+          <strong>Pro‑Move:</strong> 10–30 hochwertige RSS‑Feeds = Frontpage wirkt wie Newsroom.
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<script type="module">
+  import { boot } from "/js/render.js";
+
+  function qs(s){return document.querySelector(s)}
+  function getAdminToken(){ return localStorage.getItem("admin_token") || ""; }
+  function setAdminToken(t){ localStorage.setItem("admin_token", t); }
+
+  async function api(path, opts={}){
+    const token = getAdminToken();
+    const res = await fetch(path, {
+      ...opts,
+      headers: {
+        "Content-Type": "application/json",
+        ...(opts.headers || {}),
+        ...(token ? { "Authorization": `Bearer ${token}` } : {})
+      }
+    });
+    return await res.json();
+  }
+
+  function setState(){
+    const t = getAdminToken();
+    qs("#adminState").textContent = t ? "✅ Admin Token gesetzt." : "⚠️ Kein Admin Token gesetzt.";
+  }
+
+  function esc(s){ return String(s||"").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
+
+  function renderSourceRow(s){
+    return `
+      <div class="item">
+        <div class="title">${esc(s.name)} <span class="tag">${esc(s.category||"")}</span></div>
+        <div class="p small muted">${esc(s.feed_url)}</div>
+        <a class="btn" href="#" data-del="${esc(s.id)}">Löschen</a>
+      </div>
+    `;
+  }
+
+  async function loadSources(){
+    const out = await api("/api/sources", { method: "GET" });
+    qs("#srcList").innerHTML = (out.data || []).map(renderSourceRow).join("");
+    qs("#srcList").querySelectorAll("[data-del]").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const id = btn.getAttribute("data-del");
+        const del = await api(`/api/sources?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+        if (!del.success) alert(del.error || "Delete failed");
+        await loadSources();
+      });
+    });
+  }
+
+  boot("admin").then(async ()=>{
+    setState();
+    await loadSources();
+
+    qs("#saveToken").addEventListener("click", (e)=>{
+      e.preventDefault();
+      setAdminToken(qs("#adminToken").value.trim());
+      setState();
+    });
+
+    qs("#addSource").addEventListener("click", async (e)=>{
+      e.preventDefault();
+      qs("#srcMsg").textContent = "Speichere…";
+      const out = await api("/api/sources", {
+        method:"POST",
+        body: JSON.stringify({
+          name: qs("#srcName").value.trim(),
+          feed_url: qs("#srcUrl").value.trim(),
+          category: qs("#srcCat").value.trim() || "news"
+        })
+      });
+      qs("#srcMsg").textContent = out.success ? "✅ Quelle gespeichert." : (out.error || "Fehler");
+      if (out.success) {
+        qs("#srcName").value=""; qs("#srcUrl").value=""; qs("#srcCat").value="";
+        await loadSources();
+      }
+    });
+
+    qs("#runIngest").addEventListener("click", async (e)=>{
+      e.preventDefault();
+      qs("#ingestMsg").textContent = "Ingest läuft…";
+      const out = await api("/api/ingest-rss", { method:"POST", body: JSON.stringify({ via:"admin" }) });
+      qs("#ingestMsg").textContent = out.success ? `✅ Inserted: ${out.inserted}, Updated: ${out.updated}, Errors: ${(out.errors||[]).length}` : (out.error || "Fehler");
+    });
+
+    qs("#enrichLatest").addEventListener("click", async (e)=>{
+      e.preventDefault();
+      qs("#enrichMsg").textContent = "Lade neueste Docs…";
+      const docs = await api("/api/documents?limit=5", { method:"GET" });
+      if (!docs.success) { qs("#enrichMsg").textContent = docs.error || "Fehler"; return; }
+
+      let ok=0, fail=0;
+      for (const d of (docs.data||[])) {
+        qs("#enrichMsg").textContent = `Enrich: ${d.title}…`;
+        const r = await api("/api/enrich", { method:"POST", body: JSON.stringify({ id: d.id }) });
+        if (r.success) ok++; else fail++;
+      }
+      qs("#enrichMsg").textContent = `✅ Enrich fertig. OK: ${ok} / Fail: ${fail}`;
+    });
+  });
+</script>
+
+<div class="footer">
+  <div class="container">
+    <div class="row">
+      <div>© <span id="year"></span> Wissens‑Bank. <span class="muted">Recherche‑Index & Leseführung.</span></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="/impressum.html">Impressum</a>
+        <a href="/datenschutz.html">Datenschutz</a>
+        <a href="/agb.html">AGB</a>
+      </div>
+    </div>
+    <div style="margin-top:10px" class="p small muted">
+      Hinweis: Wir hosten keine urheberrechtlich geschützten Inhalte Dritter. Wir verlinken auf Quellen und erstellen Zusammenfassungen/Leseführung.
+    </div>
+  </div>
+</div>
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+
+
+<!-- Deployed with Zip-Ship -->
+<div id="zipship-badge" style="position:fixed;bottom:12px;right:12px;z-index:9999;font-family:system-ui,sans-serif;font-size:12px;">
+  <a href="https://zip-ship-revolution.com/?utm_source=user_site" target="_blank" rel="noopener" 
+     style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(10,14,39,0.85);color:#00F0FF;text-decoration:none;border-radius:6px;border:1px solid rgba(0,240,255,0.3);backdrop-filter:blur(8px);transition:all 0.2s;">
+    <span style="font-size:14px;">⚡</span>
+    <span>Deployed with Zip-Ship</span>
+  </a>
+</div>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Artikel – Epstein Files</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="topbar">
+  <div class="container">
+    <div class="row">
+      <div class="badge"><span class="dot"></span><strong>Live</strong> · <span id="today"></span></div>
+      <div class="badge">Status: <span id="authState">Gast</span> · <a href="#" id="logoutBtn" style="display:none">Logout</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="masthead">
+  <div class="container">
+    <div class="inner">
+      <div class="logo">
+        EPSTEIN FILES
+        <small>Index + Leseführung für öffentlich zugängliche Quellen · Premium: Highlights, Smart‑Match, Namen‑Index</small>
+      </div>
+      <div class="actions">
+        <a class="btn" href="/admin.html">Admin</a>
+        <a class="btn primary" href="#" data-subscribe>Freischalten <small>ab €1,99</small></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="container">
+    <div class="row">
+      <a href="/">Start</a>
+      <a href="/search.html">Suche</a>
+      <a href="/names.html">Namen‑Index</a>
+      <a href="/about.html">Methode</a>
+      <a href="/partners.html">Partner</a>
+    </div>
+  </div>
+</div>
+
+<main class="container">
+  <div class="grid" style="grid-template-columns:1.1fr .9fr;margin-top:16px">
+    <div>
+      <div class="card pad" id="articleCard">
+        <div class="kicker">Artikel</div>
+        <div class="h1" id="title">…</div>
+        <div class="meta" id="meta"></div>
+
+        <div class="thumb" style="width:100%;height:320px;margin-top:12px">
+          <img id="coverImg" src="/assets/placeholder.svg" alt="">
+        </div>
+
+        <hr>
+        <div class="p" id="summary"></div>
+        <div class="p small muted" id="excerpt"></div>
+
+        <div id="premiumSection"></div>
+
+        <hr>
+        <div class="p small">
+          Quelle: <a id="sourceLink" href="#" target="_blank" rel="noopener">öffnen</a>
+        </div>
+      </div>
+    </div>
+    <aside>
+      <div class="card pad">
+        <div class="kicker">Aktion</div>
+        <div class="h2">Premium: Leseführung</div>
+        <div class="p muted">Highlights + Querverweise + Smart‑Match auf deine Suche.</div>
+        <a class="btn primary" href="#" data-subscribe>Freischalten ab €1,99</a>
+        <hr>
+        <div class="notice">
+          Tipp: Suche nach Namen → Premium Match zeigt dir relevante Highlights ohne Leaks.
+        </div>
+      </div>
+      <div class="card pad" style="margin-top:18px">
+        <div class="kicker">Tags</div>
+        <div class="tags" id="tags"></div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<script type="module">
+  import { apiGet, esc, safeImg } from "/js/api.js";
+  import { boot } from "/js/render.js";
+
+  function qs(s){return document.querySelector(s)}
+
+  function renderPremium(premium, highlights) {
+    if (!premium) {
+      return `
+      <div class="premiumLock">
+        <h4>Premium‑Highlights (gesperrt)</h4>
+        <div class="p small">Hier stehen kuratierte Hinweise: was prüfen, Widersprüche, Querverweise.</div>
+        <a class="btn danger" href="#" data-subscribe>Freischalten ab €1,99</a>
+      </div>`;
+    }
+    const lis = (highlights||[]).map(x=>`<li>${esc(x)}</li>`).join("");
+    return `
+      <div class="card pad" style="margin-top:14px;border-color:#b40000">
+        <div class="kicker">Premium</div>
+        <div class="h2">Highlights</div>
+        <ul>${lis || "<li>Keine Highlights vorhanden.</li>"}</ul>
+      </div>`;
+  }
+
+  boot("article").then(async () => {
+    const params = new URLSearchParams(location.search);
+    const slug = params.get("slug") || params.get("id") || "";
+    const out = await apiGet(`/api/document?slug=${encodeURIComponent(slug)}`);
+    if (!out.success) {
+      qs("#articleCard").innerHTML = '<div class="alert">Nicht gefunden.</div>';
+      return;
+    }
+    const d = out.data;
+    document.title = d.title + " – Epstein Files";
+    qs("#title").textContent = d.title;
+    qs("#meta").innerHTML = `
+      <span>${esc(d.source_name||"")}</span><span>·</span>
+      <span>${d.published_at ? new Date(d.published_at).toLocaleDateString("de-DE") : ""}</span>
+    `;
+    qs("#summary").textContent = d.public_summary || "";
+    qs("#excerpt").textContent = d.excerpt || "";
+    qs("#sourceLink").href = d.source_url;
+    qs("#sourceLink").textContent = d.source_url;
+
+    const img = safeImg(d.image_url);
+    qs("#coverImg").src = img || "/assets/placeholder.svg";
+    qs("#coverImg").onerror = () => { qs("#coverImg").src = "/assets/placeholder.svg"; };
+
+    qs("#premiumSection").innerHTML = renderPremium(out.premium, d.premium_highlights);
+    qs("#tags").innerHTML = (d.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
+  });
+</script>
+
+<div class="footer">
+  <div class="container">
+    <div class="row">
+      <div>© <span id="year"></span> Wissens‑Bank. <span class="muted">Recherche‑Index & Leseführung.</span></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="/impressum.html">Impressum</a>
+        <a href="/datenschutz.html">Datenschutz</a>
+        <a href="/agb.html">AGB</a>
+      </div>
+    </div>
+    <div style="margin-top:10px" class="p small muted">
+      Hinweis: Wir hosten keine urheberrechtlich geschützten Inhalte Dritter. Wir verlinken auf Quellen und erstellen Zusammenfassungen/Leseführung.
+    </div>
+  </div>
+</div>
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+
+
+<!-- Deployed with Zip-Ship -->
+<div id="zipship-badge" style="position:fixed;bottom:12px;right:12px;z-index:9999;font-family:system-ui,sans-serif;font-size:12px;">
+  <a href="https://zip-ship-revolution.com/?utm_source=user_site" target="_blank" rel="noopener" 
+     style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(10,14,39,0.85);color:#00F0FF;text-decoration:none;border-radius:6px;border:1px solid rgba(0,240,255,0.3);backdrop-filter:blur(8px);transition:all 0.2s;">
+    <span style="font-size:14px;">⚡</span>
+    <span>Deployed with Zip-Ship</span>
+  </a>
+</div>
+</body>
+</html>

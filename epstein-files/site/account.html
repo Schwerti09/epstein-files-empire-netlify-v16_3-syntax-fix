@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Account – Wissens‑Bank</title>
+  <meta name="description" content="Premium Status, Ablaufdatum, Billing Portal.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="topbar">
+  <div class="container">
+    <div class="row">
+      <div class="badge"><span class="dot"></span><strong>Live</strong> · <span id="today"></span></div>
+      <div class="badge">Status: <span id="authState">Gast</span> · <a href="#" id="logoutBtn" style="display:none">Logout</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="masthead">
+  <div class="container">
+    <div class="inner">
+      <div class="logo">
+        WISSENS‑BANK
+        <small>Premium Token · Billing Portal · Status</small>
+      </div>
+      <div class="actions">
+        <a class="btn" href="/pricing.html">Preise</a>
+        <a class="btn primary" href="/search.html">Suchen</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="container">
+    <div class="row">
+      <a href="/">Start</a>
+      <a href="/search.html">Suche</a>
+      <a href="/names.html">Namen‑Index</a>
+      <a href="/alerts.html">Alerts</a>
+      <a href="/pricing.html">Preise</a>
+      <a href="/newsletter.html">Briefing</a>
+      <a href="/account.html" class="active">Account</a>
+    </div>
+  </div>
+</div>
+
+<main class="container" style="margin-top:16px">
+  <div class="grid" style="grid-template-columns:1.2fr .8fr;gap:14px">
+    <div class="card pad">
+      <div class="kicker">Account</div>
+      <div class="h1">Premium‑Status</div>
+      <div id="status" class="p muted">Lade…</div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+        <a class="btn danger" href="/pricing.html">Upgrade / kaufen</a>
+        <button class="btn" id="portalBtn" disabled>Billing‑Portal öffnen</button>
+        <button class="btn" id="logoutNow">Token löschen</button>
+      </div>
+
+      <div class="p small muted" style="margin-top:10px">
+        Hinweis: Day Pass hat evtl. kein Billing‑Portal (weil kein Abo).
+      </div>
+    </div>
+
+    <aside class="card pad">
+      <div class="kicker">Sicherheit</div>
+      <div class="h2">So funktioniert der Token</div>
+      <div class="p muted">
+        Premium ist ein anonymer Token im Browser‑Storage. Keine Registrierung nötig.
+        Verlierst du den Token (Browser gelöscht), ist der Zugang weg. Für sauberen Support: optional Account‑System (Roadmap).
+      </div>
+      <hr>
+      <div class="h2">Support‑Regel</div>
+      <div class="p muted">
+        Wir liefern Software, keine Beratung. Inhalt = öffentlich zugängliche Quellen + Zusammenfassungen/Leseführung.
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div>© <span id="year"></span> Wissens‑Bank.</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="/impressum.html">Impressum</a>
+        <a href="/datenschutz.html">Datenschutz</a>
+        <a href="/agb.html">AGB</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  import { apiPost, apiGet, getToken, clearToken } from "/js/api.js";
+
+  document.getElementById("today").textContent = new Date().toLocaleDateString("de-DE",{weekday:"long",year:"numeric",month:"long",day:"2-digit"});
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  const st = document.getElementById("authState");
+  const lo = document.getElementById("logoutBtn");
+  const token = getToken();
+  st.textContent = token ? "Premium (Token)" : "Gast";
+  if (lo) {
+    lo.style.display = token ? "inline-flex" : "none";
+    lo.addEventListener("click", (e)=>{ e.preventDefault(); clearToken(); location.reload(); });
+  }
+
+  document.getElementById("logoutNow").addEventListener("click", ()=>{
+    clearToken();
+    location.reload();
+  });
+
+  async function load() {
+    const el = document.getElementById("status");
+    if (!token) {
+      el.textContent = "Gast. Kein Premium‑Token im Browser.";
+      return;
+    }
+    const me = await apiGet("/api/me");
+    if (!me?.premium) {
+      el.textContent = "Token vorhanden, aber Premium ist nicht aktiv (abgelaufen oder ungültig).";
+      return;
+    }
+    const exp = me?.expires_at ? new Date(me.expires_at).toLocaleString("de-DE") : "—";
+    el.innerHTML = `✅ Premium aktiv <span class="muted">(bis ${exp})</span>`;
+    const pb = document.getElementById("portalBtn");
+    pb.disabled = !me?.has_customer;
+  }
+
+  document.getElementById("portalBtn").addEventListener("click", async ()=>{
+    const pb = document.getElementById("portalBtn");
+    pb.disabled = true;
+    pb.textContent = "Öffne…";
+    const out = await apiPost("/api/portal", {});
+    if (out?.url) location.href = out.url;
+    alert(out?.error || "Portal nicht verfügbar.");
+    pb.disabled = false;
+    pb.textContent = "Billing‑Portal öffnen";
+  });
+
+  load();
+</script>
+
+
+<!-- Deployed with Zip-Ship -->
+<div id="zipship-badge" style="position:fixed;bottom:12px;right:12px;z-index:9999;font-family:system-ui,sans-serif;font-size:12px;">
+  <a href="https://zip-ship-revolution.com/?utm_source=user_site" target="_blank" rel="noopener" 
+     style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(10,14,39,0.85);color:#00F0FF;text-decoration:none;border-radius:6px;border:1px solid rgba(0,240,255,0.3);backdrop-filter:blur(8px);transition:all 0.2s;">
+    <span style="font-size:14px;">⚡</span>
+    <span>Deployed with Zip-Ship</span>
+  </a>
+</div>
+</body>
+</html>

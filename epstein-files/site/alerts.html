@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Alerts – Wissens‑Bank</title>
+  <meta name="description" content="Watchlist/Alerts: Lass dich benachrichtigen, wenn neue Treffer zu einem Namen oder Suchbegriff auftauchen (Double Opt‑In).">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="topbar">
+  <div class="container">
+    <div class="row">
+      <div class="badge"><span class="dot"></span><strong>Live</strong> · <span id="today"></span></div>
+      <div class="badge">Status: <span id="authState">Gast</span> · <a href="#" id="logoutBtn" style="display:none">Logout</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="masthead">
+  <div class="container">
+    <div class="inner">
+      <div class="logo">
+        WISSENS‑BANK
+        <small>Alerts / Watchlist · “Sag mir, wenn X auftaucht”</small>
+      </div>
+      <div class="actions">
+        <a class="btn" href="/pricing.html">Preise</a>
+        <a class="btn primary" href="/search.html">Suchen</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="container">
+    <div class="row">
+      <a href="/">Start</a>
+      <a href="/search.html">Suche</a>
+      <a href="/names.html">Namen‑Index</a>
+      <a href="/alerts.html" class="active">Alerts</a>
+      <a href="/pricing.html">Preise</a>
+      <a href="/newsletter.html">Briefing</a>
+      <a href="/account.html">Account</a>
+    </div>
+  </div>
+</div>
+
+<main class="container" style="margin-top:16px">
+  <div class="grid" style="grid-template-columns:1.2fr .8fr;gap:14px">
+    <div class="card pad">
+      <div class="kicker">Alerts</div>
+      <div class="h1">Wenn neue Treffer auftauchen, bekommst du eine Mail.</div>
+      <div class="p muted">Double opt‑in. Kein Tracking-Profil. Social‑Proof bleibt thresholded. Alerts sind der “Retention‑Motor”.</div>
+
+      <div class="notice" id="statusBox" style="display:none;margin-top:12px"></div>
+
+      <form id="alertForm" style="margin-top:12px;display:grid;gap:10px">
+        <label class="p small muted">E‑Mail</label>
+        <input id="email" class="input" type="email" placeholder="dein@email.de" required>
+
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:10px">
+          <div>
+            <label class="p small muted">Typ</label>
+            <select id="kind" class="input">
+              <option value="search">Suche (Keyword)</option>
+              <option value="name">Name (Slug)</option>
+            </select>
+          </div>
+          <div>
+            <label class="p small muted">Frequenz</label>
+            <select id="frequency" class="input">
+              <option value="daily">Täglich</option>
+              <option value="hourly">Stündlich</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="p small muted">Suchbegriff oder Name‑Slug</label>
+        <input id="q" class="input" type="text" placeholder="z.B. flight log / bill-clinton / jeffrey-epstein" required>
+
+        <button class="btn danger" type="submit">Alert anlegen</button>
+      </form>
+
+      <div class="p small muted" style="margin-top:10px">
+        Hinweis: In Produktion kommt die Mail über Resend. Ohne <code>RESEND_API_KEY</code> bekommst du den Bestätigungslink direkt angezeigt (Dev‑Mode).
+      </div>
+    </div>
+
+    <aside class="card pad">
+      <div class="kicker">So bleibt’s clean</div>
+      <ul class="p">
+        <li>Wir benachrichtigen nur über <strong>neue</strong> Treffer seit dem letzten Check.</li>
+        <li>Wir speichern keine Payment-Daten; Stripe macht Stripe‑Dinge.</li>
+        <li>Du kannst jeden Alert 1‑Klick abbestellen (Link in jeder Mail).</li>
+      </ul>
+      <hr>
+      <div class="h2">Upgrade‑Hebel</div>
+      <div class="p muted">Premium + Pro bringen dir zusätzlich: bessere Treffer‑Sortierung, mehr Kontext, höheres Rate‑Limit und Early Access.</div>
+      <a class="btn" href="/pricing.html" style="margin-top:10px">Preise ansehen</a>
+    </aside>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div>© <span id="year"></span> Wissens‑Bank.</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="/impressum.html">Impressum</a>
+        <a href="/datenschutz.html">Datenschutz</a>
+        <a href="/agb.html">AGB</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  import { apiPost, getToken, clearToken } from "/js/api.js";
+
+  document.getElementById("today").textContent = new Date().toLocaleDateString("de-DE",{weekday:"long",year:"numeric",month:"long",day:"2-digit"});
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  const t = getToken();
+  const st = document.getElementById("authState");
+  const lo = document.getElementById("logoutBtn");
+  if (st) st.textContent = t ? "Premium aktiv" : "Gast";
+  if (lo) {
+    lo.style.display = t ? "inline-flex" : "none";
+    lo.addEventListener("click", (e)=>{ e.preventDefault(); clearToken(); location.reload(); });
+  }
+
+  const qs = new URLSearchParams(location.search);
+  const status = qs.get("status");
+  const presetQ = qs.get("q");
+  const presetSlug = qs.get("slug");
+
+  const sb = document.getElementById("statusBox");
+  if (status) {
+    sb.style.display = "block";
+    sb.textContent = status === "confirmed"
+      ? "✅ Bestätigt. Dein Alert ist aktiv."
+      : status === "unsubscribed"
+        ? "🫡 Abgemeldet. Alert deaktiviert."
+        : "⚠️ Link ungültig oder abgelaufen.";
+  }
+
+  if (presetSlug) {
+    document.getElementById("kind").value = "name";
+    document.getElementById("q").value = presetSlug;
+  } else if (presetQ) {
+    document.getElementById("kind").value = "search";
+    document.getElementById("q").value = presetQ;
+  }
+
+  document.getElementById("kind").addEventListener("change", ()=>{
+    const kind = document.getElementById("kind").value;
+    document.getElementById("q").placeholder = kind === "name"
+      ? "z.B. bill-clinton"
+      : "z.B. flight log";
+  });
+
+  document.getElementById("alertForm").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    sb.style.display = "none";
+
+    const email = document.getElementById("email").value.trim();
+    const kind = document.getElementById("kind").value;
+    const frequency = document.getElementById("frequency").value;
+    const q = document.getElementById("q").value.trim();
+
+    const out = await apiPost("/api/alerts", { email, kind, frequency, q, slug: (kind==="name"?q:"") });
+    sb.style.display = "block";
+    if (out?.success) {
+      sb.textContent = out?.confirmUrl
+        ? `✅ Dev‑Mode: Öffne diesen Link zum Bestätigen: ${out.confirmUrl}`
+        : "✅ Check deine Inbox und bestätige den Alert.";
+      return;
+    }
+    sb.textContent = out?.error || "Fehler.";
+  });
+</script>
+
+<!-- Deployed with Zip-Ship -->
+<div id="zipship-badge" style="position:fixed;bottom:12px;right:12px;z-index:9999;font-family:system-ui,sans-serif;font-size:12px;">
+  <a href="https://zip-ship-revolution.com/?utm_source=user_site" target="_blank" rel="noopener" 
+     style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(10,14,39,0.85);color:#00F0FF;text-decoration:none;border-radius:6px;border:1px solid rgba(0,240,255,0.3);backdrop-filter:blur(8px);transition:all 0.2s;">
+    <span style="font-size:14px;">⚡</span>
+    <span>Deployed with Zip-Ship</span>
+  </a>
+</div>
+</body>
+</html>

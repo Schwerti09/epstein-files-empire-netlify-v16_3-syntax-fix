@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Epstein Files – Research Index</title>
+  <meta name="description" content="Index + Leseführung für öffentlich zugängliche Quellen. Suche nach Namen/Ereignissen, finde die relevanten Treffer – Premium schaltet Highlights & Smart‑Match frei.">
+  <meta property="og:title" content="Epstein Files – Research Index">
+  <meta property="og:description" content="Index + Leseführung für öffentlich zugängliche Quellen. Premium: Highlights, Smart‑Match, Namen‑Index.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="/">
+  <meta property="og:image" content="/.netlify/functions/og?name=EPSTEIN%20FILES&subtitle=RESEARCH%20INDEX%20%E2%80%A2%20PUBLIC%20SOURCES">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/assets/favicon.svg">
+</head>
+<body>
+
+<!-- Top trust bar -->
+<div class="topbar">
+  <div class="container">
+    <div class="row">
+      <div class="badge"><span class="dot"></span><strong>Live</strong> · <span id="today"></span></div>
+      <div class="badge">
+        <span class="muted">Keine Volltexte. Nur Quellenlinks + Zusammenfassungen.</span>
+        <span class="sep">·</span>
+        Status: <span id="authState">Gast</span> · <a href="#" id="logoutBtn" style="display:none">Logout</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Masthead -->
+<header class="masthead">
+  <div class="container">
+    <div class="inner">
+      <div class="logo">
+        EPSTEIN FILES
+        <small>Index + Leseführung für öffentlich zugängliche Quellen · Premium: Highlights, Smart‑Match, Namen‑Index</small>
+      </div>
+      <div class="actions">
+        <a class="btn" href="/search.html">Suche</a>
+        <a class="btn" href="/names.html">Namen‑Index</a>
+        <a class="btn primary" href="#" data-subscribe data-plan="day">Premium freischalten <small>ab €1,99</small></a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Section nav -->
+<nav class="nav" aria-label="Hauptnavigation">
+  <div class="container">
+    <div class="row">
+      <a href="/">Start</a>
+      <a href="/search.html">Suche</a>
+      <a href="/names.html">Namen‑Index</a>
+      <a href="/topics.html">Topics</a>
+      <a href="/sources.html">Sources</a>
+      <a href="/timeline.html">Timeline</a>
+      <a href="/alerts.html">Alerts</a>
+      <a href="/pricing.html">Preise</a>
+      <a href="/newsletter.html">Briefing</a>
+      <a href="/account.html">Account</a>
+      <a href="/about.html">Methode</a>
+      <a href="/partners.html">Partner</a>
+      <a href="/admin.html" class="muted">Admin</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Breaking bar -->
+<section class="breaking">
+  <div class="container">
+    <div class="label">BREAKING</div>
+    <div class="ticker" aria-live="polite">
+      <div class="track" id="breakingTicker">
+        <span class="muted">Lade Headlines…</span>
+      </div>
+    </div>
+    <a class="pill" href="#" data-subscribe data-plan="day" title="Premium freischalten">Smart‑Match</a>
+  </div>
+</section>
+
+<main class="container">
+
+  <!-- Search hero -->
+  <section class="heroNews">
+    <div class="heroLeft">
+      <p class="kicker">Live Research Hub</p>
+      <h1 class="headline">Finde in 30 Sekunden, was sonst Stunden dauert.</h1>
+      <p class="sub">
+        Suche nach Namen/Ereignissen → wir zeigen dir Public‑Summary + (Premium) die relevanten Highlights, Querverweise & Prüfpunkte.
+      </p>
+
+      <div class="ctaRow">
+        <form id="searchForm" class="searchbar" style="margin:0;flex:1">
+          <input id="searchInput" type="search" placeholder="Suche: Name, Ort, Gericht, Fluglog, Stiftung…" autocomplete="off">
+          <button type="submit">Suchen</button>
+        </form>
+        <a class="btn danger" href="#" data-subscribe data-plan="day">Premium ab €1,99</a>
+      </div>
+
+      <div id="premiumMatch" class="card pad" style="display:none;margin-top:14px">
+        <div class="alert">
+          <strong>Premium Match gefunden:</strong> Für „<span id="premiumMatchQuery"></span>“ existieren Premium‑Highlights (Leseführung + Querverweise).
+          <a href="#" data-subscribe data-plan="day">Jetzt freischalten</a>.
+        </div>
+      </div>
+
+      <div class="microTrust">
+        <span class="chip">🔎 Quellenlinks</span>
+        <span class="chip">🧾 Zusammenfassungen</span>
+        <span class="chip">🧠 Leseführung (Premium)</span>
+        <span class="chip">🧊 Redaktion/Privacy‑Maskierung</span>
+      </div>
+    </div>
+
+    <aside class="heroRight">
+      <div class="card pad">
+        <div class="kicker">Premium</div>
+        <div class="h2">Lesemaschine statt Link‑Wüste</div>
+        <div class="p muted">Für Leute, die schnell zum relevanten Kern kommen wollen.</div>
+        <ul class="tight">
+          <li><strong>Highlights</strong> (Worauf achten, was prüfen)</li>
+          <li><strong>Smart Match</strong> (Premium‑Passagen passend zur Suche)</li>
+          <li><strong>Namen‑Index</strong> (Landingpages, Querverweise)</li>
+        </ul>
+        <a class="btn primary" href="#" data-subscribe data-plan="day">Freischalten</a>
+        <hr>
+        <div class="notice">
+          <strong>Trust:</strong> Keine Volltexte, keine sensiblen Details. Wir verlinken auf Quellen, maskieren Kontakt‑Infos und liefern Leseführung.
+        </div>
+      </div>
+    
+      <div class="card pad" style="margin-top:14px">
+        <div class="kicker">Trending Names</div>
+        <div class="h3">Was heute klebt</div>
+        <div class="p small muted">Basierend auf echten Aufrufen der Namen‑Pages (24h). Social‑Proof nur ab Mindest‑Volumen.</div>
+        <div id="trendingNames" class="list"></div>
+      </div>
+</aside>
+  </section>
+
+  <!-- Top stories: NYT-like -->
+  <section class="paperGrid" aria-label="Top Stories">
+    <div class="leadCol">
+      <div id="lead"></div>
+    </div>
+    <aside class="railCol">
+      <div class="card" id="continueReadingCard" style="margin-bottom:14px">
+        <div class="pad" style="border-bottom:1px solid var(--line)">
+          <div class="kicker">Continue Reading</div>
+          <div class="h3">Weiterlesen</div>
+          <div class="p small muted">Nur lokal im Browser gespeichert (kein Server‑Profil).</div>
+        </div>
+        <div id="continueList" class="list"></div>
+      </div>
+
+      <div class="card">
+        <div class="pad" style="border-bottom:1px solid var(--line)">
+          <div class="kicker">Most Read</div>
+          <div class="h3">Meistgeklickt (Session‑Proxy)</div>
+          <div class="p small muted">Ohne Tracking‑Overkill – nur kuratiertes Ranking.</div>
+        </div>
+        <div id="mostRead" class="list"></div>
+      </div>
+    </aside>
+  </section>
+
+  <!-- Top grid -->
+  <section class="topStories">
+    <div class="sectionHead">
+      <div>
+        <div class="kicker">Top Stories</div>
+        <div class="h2">Was jetzt wichtig ist</div>
+      </div>
+      <a class="btn" href="/search.html">Mehr ansehen</a>
+    </div>
+    <div id="topGrid" class="gridCards"></div>
+  </section>
+
+  <!-- Latest + Sidebar -->
+  <section class="contentSplit">
+    <div class="mainCol">
+      <div class="card">
+        <div class="pad" style="border-bottom:1px solid var(--line)">
+          <div class="kicker">Latest</div>
+          <div class="h2">Neueste Einträge</div>
+          <div class="p muted">Automatisch aus RSS‑Quellen ingestiert. Premium: Highlights + Smart‑Match auf deine Suche.</div>
+        </div>
+        <div id="latestList" class="list"></div>
+      </div>
+
+      <div class="card pad">
+        <div class="kicker">Hot Topics</div>
+        <div class="h3">Worüber gerade alle stolpern</div>
+        <div class="p small muted">Aus Dokument‑Tags der letzten 30 Tage.</div>
+        <div id="hotTopics" class="topicRows" style="margin-top:8px"></div>
+      
+      <div class="card pad" style="margin-top:14px">
+        <div class="kicker">Top Sources</div>
+        <div class="h3">Woher die Links kommen</div>
+        <div class="p small muted">Aus den letzten 12 Monaten – klick öffnet Source‑Landingpage.</div>
+        <div id="topSources" class="topicRows" style="margin-top:8px"></div>
+      </div>
+
+</div>
+
+      <div class="card" style="margin-top:18px">
+        <div class="pad" style="border-bottom:1px solid var(--line)">
+          <div class="kicker">Topics</div>
+          <div class="h2">Themenseiten (Programmatic SEO)</div>
+          <div class="p muted">Jeder Name bekommt eine eigene Landingpage: <span class="mono">/file/name</span> – plus Topics/Sources/Timeline Landingpages</div>
+        </div>
+        <div class="pad">
+          <div id="topicRows" class="topicRows"></div>
+          <div class="p small muted" style="margin-top:10px">
+            Tipp: Teile Landingpages — OG‑Bild wird automatisch als „CONFIDENTIAL“-Akte gerendert.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="sideCol">
+      <div class="card pad">
+        <div class="kicker">Briefing</div
+        <div class="h3">Was ist das hier?</div>
+        <div class="p muted">
+          Ein kuratierter Index für öffentlich verfügbare Quellen – damit Leser schneller das Relevante finden. Wir hosten keine Volltexte.
+        </div>
+        <hr>
+        <div class="p small muted">
+          <strong>Legal‑Note:</strong> Wir verlinken auf Quellen, erstellen Zusammenfassungen und Leseführung. Keine illegalen Inhalte, keine sensiblen Daten.
+        </div>
+      </div>
+
+      <div class="card pad">
+        <div class="kicker">Hot Topics</div>
+        <div class="h3">Worüber gerade alle stolpern</div>
+        <div class="p small muted">Aus Dokument‑Tags der letzten 30 Tage.</div>
+        <div id="hotTopics" class="topicRows" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <div class="pad" style="border-bottom:1px solid var(--line)">
+          <div class="kicker">Editors’ Picks</div>
+          <div class="h3">Kurzliste</div>
+        </div>
+        <div id="sidebarList" class="list"></div>
+      </div>
+
+      <div class="card pad" style="margin-top:18px">
+        <div class="kicker">Partner</div>
+        <div class="h3">Tools für Recherche & OpSec</div>
+        <div class="p small muted">Transparenz auf <a href="/partners.html">Partner</a>.</div>
+      </div>
+    </aside>
+  </section>
+
+</main>
+
+<!-- sticky subscribe ribbon -->
+<div class="stickySub" id="stickySub">
+  <div class="container">
+    <div class="row" style="gap:12px">
+      <div>
+        <strong>Premium</strong> · Highlights + Smart‑Match + Namen‑Index
+        <span class="muted">— ab €1,99 (Day Pass) oder Abo.</span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <a class="btn small" href="/about.html">Methode</a>
+        <a class="btn danger small" href="#" data-subscribe data-plan="day">Freischalten</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div>© <span id="year"></span> Wissens‑Bank. <span class="muted">Recherche‑Index & Leseführung.</span></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="/impressum.html">Impressum</a>
+        <a href="/datenschutz.html">Datenschutz</a>
+        <a href="/agb.html">AGB</a>
+      </div>
+    </div>
+    <div style="margin-top:10px" class="p small muted">
+      Hinweis: Wir hosten keine urheberrechtlich geschützten Inhalte Dritter. Wir verlinken auf Quellen und erstellen Zusammenfassungen/Leseführung.
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  import { boot } from "/js/render.js";
+  boot("home").catch(err => {
+    console.error(err);
+    document.getElementById("lead").innerHTML = '<div class="card pad"><div class="alert">API nicht erreichbar oder DB nicht eingerichtet. Check: /api/health und Neon schema.sql.</div></div>';
+  });
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+
+<!-- Deployed with Zip-Ship -->
+<div id="zipship-badge" style="position:fixed;bottom:12px;right:12px;z-index:9999;font-family:system-ui,sans-serif;font-size:12px;">
+  <a href="https://zip-ship-revolution.com/?utm_source=user_site" target="_blank" rel="noopener" 
+     style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(10,14,39,0.85);color:#00F0FF;text-decoration:none;border-radius:6px;border:1px solid rgba(0,240,255,0.3);backdrop-filter:blur(8px);transition:all 0.2s;">
+    <span style="font-size:14px;">⚡</span>
+    <span>Deployed with Zip-Ship</span>
+  </a>
+</div>
+</body>
+</html>

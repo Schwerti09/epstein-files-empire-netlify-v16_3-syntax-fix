@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Preise – Wissens‑Bank Premium</title>
+  <meta name="description" content="Day Pass oder Abo: Premium-Highlights, Smart‑Match, Trending Names, Briefing & Programmatic SEO Landingpages.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="topbar">
+  <div class="container">
+    <div class="row">
+      <div class="badge"><span class="dot"></span><strong>Live</strong> · <span id="today"></span></div>
+      <div class="badge">Status: <span id="authState">Gast</span> · <a href="#" id="logoutBtn" style="display:none">Logout</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="masthead">
+  <div class="container">
+    <div class="inner">
+      <div class="logo">
+        WISSENS‑BANK
+        <small>Index + Leseführung für öffentlich zugängliche Quellen · Premium: Smart‑Match, Highlights, Briefing</small>
+      </div>
+      <div class="actions">
+        <a class="btn" href="/newsletter.html">Briefing</a>
+        <a class="btn primary" href="#" data-subscribe>Freischalten</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="container">
+    <div class="row">
+      <a href="/">Start</a>
+      <a href="/search.html">Suche</a>
+      <a href="/names.html">Namen‑Index</a>
+      <a href="/alerts.html">Alerts</a>
+      <a href="/pricing.html" class="active">Preise</a>
+      <a href="/about.html">Methode</a>
+      <a href="/partners.html">Partner</a>
+      <a href="/account.html">Account</a>
+    </div>
+  </div>
+</div>
+
+<main class="container" style="margin-top:16px">
+  <div class="card pad">
+    <div class="kicker">Premium</div>
+    <div class="h1">Freischalten – klar, schnell, ohne Spielchen</div>
+    <div class="p muted">Du bekommst nur dann „Social Proof“, wenn genug echte Aktivität vorhanden ist (Privacy‑Threshold). Keine Fake‑Zahlen.</div>
+  </div>
+
+  <section class="grid" style="grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px">
+    <div class="card pad">
+      <div class="kicker">Day Pass</div>
+      <div class="h2">€1,99</div>
+      <div class="p muted">24h Zugriff · perfekt zum Reinschnuppern</div>
+      <ul class="p">
+        <li>Premium‑Highlights in Artikeln</li>
+        <li>Smart‑Match auf deine Suche</li>
+        <li>Blur‑Teaser + redacted snippets</li>
+      </ul>
+      <button class="btn danger" data-plan="day" style="width:100%">Day Pass aktivieren</button>
+      <div class="p small muted" style="margin-top:8px">Kein Abo. Läuft automatisch aus.</div>
+    </div>
+
+    <div class="card pad" style="border:1px solid rgba(255,60,60,.35);box-shadow:0 0 0 1px rgba(255,60,60,.15)">
+      <div class="kicker">Abo (Empfohlen)</div>
+      <div class="h2">€4,99 <span class="small muted">/ Monat</span></div>
+      <div class="p muted">Für Leser, die täglich reinschauen.</div>
+      <ul class="p">
+        <li>Alles aus Day Pass</li>
+        <li>Trending Names + Live‑Signale</li>
+        <li>Daily Briefing (E‑Mail)</li>
+        <li>Priorisierte Ladezeiten (Caching‑Rules)</li>
+      </ul>
+      <button class="btn danger" data-plan="monthly" style="width:100%">Abo starten</button>
+      <div class="p small muted" style="margin-top:8px">Kündbar jederzeit im Billing‑Portal.</div>
+    </div>
+
+    <div class="card pad">
+      <div class="kicker">Pro</div>
+      <div class="h2">€19,99 <span class="small muted">/ Monat</span></div>
+      <div class="p muted">Für Power‑Reader & Profis.</div>
+      <ul class="p">
+        <li>Alles aus Abo</li>
+        <li>Mehr Such‑Limits (Rate‑Limit höher)</li>
+        <li>Frühzugang zu neuen Feeds</li>
+        <li>Account‑Features (Roadmap)</li>
+      </ul>
+      <button class="btn" data-plan="pro" style="width:100%">Pro freischalten</button>
+      <div class="p small muted" style="margin-top:8px">Ideal, wenn du intensiv recherchierst.</div>
+    </div>
+  </section>
+
+  <div class="card pad" style="margin-top:14px">
+    <div class="h2">Vertrauen</div>
+    <div class="p muted">Zahlung läuft über Stripe. Wir speichern keine Kartendaten. Premium‑Token ist anonym (keine Registrierung nötig).</div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px">
+      <div class="notice">✅ Stripe Checkout</div>
+      <div class="notice">✅ DSGVO‑Seiten vorhanden</div>
+      <div class="notice">✅ Keine Fake‑Claims / kein Defamation‑Bait</div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="row">
+      <div>© <span id="year"></span> Wissens‑Bank. <span class="muted">Recherche‑Index & Leseführung.</span></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="/impressum.html">Impressum</a>
+        <a href="/datenschutz.html">Datenschutz</a>
+        <a href="/agb.html">AGB</a>
+      </div>
+    </div>
+    <div style="margin-top:10px" class="p small muted">
+      Hinweis: Wir hosten keine urheberrechtlich geschützten Inhalte Dritter. Wir verlinken auf Quellen und erstellen Zusammenfassungen/Leseführung.
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  import { apiPost, getToken, clearToken } from "/js/api.js";
+
+  document.getElementById("today").textContent = new Date().toLocaleDateString("de-DE",{weekday:"long",year:"numeric",month:"long",day:"2-digit"});
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  const t = getToken();
+  const st = document.getElementById("authState");
+  const lo = document.getElementById("logoutBtn");
+  if (st) st.textContent = t ? "Premium aktiv" : "Gast";
+  if (lo) {
+    lo.style.display = t ? "inline-flex" : "none";
+    lo.addEventListener("click", (e)=>{ e.preventDefault(); clearToken(); location.reload(); });
+  }
+
+  async function go(plan) {
+    const btn = document.querySelector(`[data-plan="${plan}"]`);
+    const old = btn?.textContent;
+    if (btn) { btn.disabled = true; btn.textContent = "Weiterleitung…"; }
+    const out = await apiPost("/api/checkout", { plan });
+    if (out?.url) location.href = out.url;
+    alert(out?.error || "Checkout fehlgeschlagen.");
+    if (btn) { btn.disabled = false; btn.textContent = old; }
+  }
+
+  document.querySelectorAll("[data-plan]").forEach(b => b.addEventListener("click", (e)=>{ e.preventDefault(); go(b.dataset.plan); }));
+  document.querySelectorAll("[data-subscribe]").forEach(b => b.addEventListener("click", (e)=>{ e.preventDefault(); go("monthly"); }));
+</script>
+
+
+<!-- Deployed with Zip-Ship -->
+<div id="zipship-badge" style="position:fixed;bottom:12px;right:12px;z-index:9999;font-family:system-ui,sans-serif;font-size:12px;">
+  <a href="https://zip-ship-revolution.com/?utm_source=user_site" target="_blank" rel="noopener" 
+     style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(10,14,39,0.85);color:#00F0FF;text-decoration:none;border-radius:6px;border:1px solid rgba(0,240,255,0.3);backdrop-filter:blur(8px);transition:all 0.2s;">
+    <span style="font-size:14px;">⚡</span>
+    <span>Deployed with Zip-Ship</span>
+  </a>
+</div>
+</body>
+</html>
